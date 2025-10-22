@@ -1,39 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title}</title>
-    <link rel="stylesheet" href="static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="static/css/question.css">
-    <script defer src="static/js/jquery.min.js"></script>
-    <script defer src="static/js/bootstrap.bundle.min.js"></script>
-</head>
-<body>
-<div class="container mt-4">
-    <h1 class="h4 mb-3">第 {question_number} 题：{title}</h1>
-    <p class="lead">{prompt}</p>
-    <div class="card">
-        <div class="card-header">操作要求</div>
-        <div class="card-body">
-            <pre class="mb-0">{instructions}</pre>
+    <link rel="stylesheet" href="./static/bootstrap.min.css">
+    <link rel="stylesheet" href="./static/toastify.css">
+    <link rel="stylesheet" href="./static/viewer.min.css">
+    <style>
+                .disable-selected {
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
+                }
+                @layer utilities {
+            .watermark-container {
+                                position: fixed;
+                                top: 0;
+                                right: 0;
+                                bottom: 0;
+                                left: 0;
+                                pointer-events: none;
+                                z-index: 9999;
+                                overflow: hidden;
+            }
+        }
+    </style>
+  </head>
+  <body>
+        <div class="container-fluid" style="margin: 10px;">
+                <div class="row disable-selected">
+                        <div class="col-md-12">
+                                <h3 style="font-weight: bold;">第 {question_number} 题：{title}</h3>
+                                {prompt_html}
+                        </div>
+                </div>
+                <div class="row disable-selected" style="margin-top: 15px;">
+                        <div class="col-md-12">
+                                <h4>操作说明</h4>
+                                {instructions_html}
+                        </div>
+                </div>
+{deliverables_html}
         </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-header">需提交文件</div>
-        <div class="card-body">
-            <ul id="deliverables" class="list-group list-group-flush"></ul>
-        </div>
-    </div>
-</div>
-<script>
-const deliverables = {deliverables_json};
-const list = document.getElementById('deliverables');
-deliverables.forEach(name => {{
-    const li = document.createElement('li');
-    li.className = 'list-group-item';
-    li.textContent = name;
-    list.appendChild(li);
-}});
-</script>
-</body>
+        <div id="watermarkContainer" class="watermark-container"></div>
+    <script src="./static/jquery.min.js"></script>
+    <script src="./static/clipboard.min.js"></script>
+    <script src="./static/bootstrap.min.js"></script>
+    <script src="./static/toastify.js"></script>
+    <script src="./static/viewer.min.js"></script>
+    <script src="./static/jquery-viewer.min.js"></script>
+    <script>
+                var ShowWatermark = false;
+        var watermarkConfig = null;
+        function createWatermark() {
+            watermarkContainer.innerHTML = '';
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const cols = Math.ceil(viewportWidth / watermarkConfig.spacing) + 1;
+            const rows = Math.ceil(viewportHeight / watermarkConfig.spacing) + 1;
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const watermark = document.createElement('div');
+                    watermark.style.position = 'absolute';
+                    watermark.style.left = `${j * watermarkConfig.spacing}px`;
+                    watermark.style.top = `${i * watermarkConfig.spacing}px`;
+                    watermark.style.transform = `rotate(${watermarkConfig.rotation}deg)`;
+                    watermark.style.opacity = watermarkConfig.opacity;
+                    watermark.style.fontSize = `${watermarkConfig.fontSize}px`;
+                    watermark.style.color = watermarkConfig.color;
+                    watermark.style.fontFamily = 'Arial, sans-serif';
+                    watermark.style.whiteSpace = 'nowrap';
+                    watermark.style.userSelect = 'none';
+                    watermark.style.webkitUserSelect = 'none';
+                    watermark.style.zIndex = '100';
+                    watermark.textContent = watermarkConfig.text;
+                    watermarkContainer.appendChild(watermark);
+                }
+            }
+        }
+        $(document).ready(function() {
+                        CefSharp.BindObjectAsync("AppBridge");
+                        var clipboard = new ClipboardJS('.btncopy');
+                        clipboard.on('success', function(e) {
+                                e.clearSelection();
+                                Toastify({
+                                        text: "复制成功"
+                                }).showToast();
+                        });
+                        window.watermark = function(text) {
+                                if(ShowWatermark) {
+                                        watermarkConfig = {
+                                                text: text,
+                                                rotation: -30,
+                                                opacity: 0.05,
+                                                fontSize: 20,
+                                                spacing: 200,
+                                                color: '#000000'
+                                        };
+                                        createWatermark();
+                                }
+                        }
+                        document.addEventListener('contextmenu', function(e) {
+                                e.preventDefault();
+                                return false;
+                        });
+                        var $image = $('#preview');
+                        $image.viewer({
+                                inline: true,
+                                viewed: function() {
+                                        $image.viewer('zoomTo', 1);
+                                }
+                        });
+                        var viewer = $image.data('viewer');
+                        $('.zoom').viewer();
+                });
+    </script>
+  </body>
 </html>
