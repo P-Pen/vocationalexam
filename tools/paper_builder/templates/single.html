@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/question.css">
+    <script defer src="static/js/jquery.min.js"></script>
+    <script defer src="static/js/bootstrap.bundle.min.js"></script>
+    <script defer src="static/js/question.js"></script>
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="h4 mb-3">第 {question_number} 题：{title}</h1>
+    <p class="lead">{prompt}</p>
+    <form>
+        <div id="options" class="list-group"></div>
+    </form>
+</div>
+<script>
+const options = {options_json};
+const container = document.getElementById('options');
+options.forEach((text, index) => {
+    const letter = String.fromCharCode('A'.charCodeAt(0) + index);
+    const item = document.createElement('label');
+    item.className = 'list-group-item list-group-item-action';
+    item.innerHTML = `
+        <input type="radio" name="answer" value="${letter}" class="form-check-input me-2">
+        <span class="fw-bold">${letter}.</span> ${text}
+    `;
+    container.appendChild(item);
+});
+</script>
+</body>
+</html>
