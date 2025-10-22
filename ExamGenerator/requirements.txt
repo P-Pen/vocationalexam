@@ -1,0 +1,8 @@
+# 电子试卷生成工具依赖库
+# Python 3.8+
+
+# GUI库（tkinter是Python标准库，无需安装）
+# tkinter
+
+# 无其他外部依赖
+# 本工具仅使用Python标准库

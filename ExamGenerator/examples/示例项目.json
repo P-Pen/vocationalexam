@@ -1,0 +1,48 @@
+{
+  "questions": [
+    {
+      "type": "single",
+      "number": "1",
+      "text": "C 语言中，正确的用户标识符是（    ）",
+      "code": "",
+      "options": {
+        "A": "b+a",
+        "B": "2x",
+        "C": "&c",
+        "D": "temp"
+      }
+    },
+    {
+      "type": "single",
+      "number": "2",
+      "text": "以下程序的运行结果是（    ）",
+      "code": "#include <stdio.h>\nmain() \n{ \n  int a=3,b=5; \n  printf(\"%d\",a-b); \n}",
+      "options": {
+        "A": "-5",
+        "B": "-3",
+        "C": "-2",
+        "D": "8"
+      }
+    },
+    {
+      "type": "choice",
+      "number": "3",
+      "text": "根据程序功能描述，从备选项中选择正确的选项填入【序号】处，使程序得出正确结果，并在【答题区域】中选择正确选项。",
+      "code": "#include <stdio.h> \nmain() \n{ \n  【1】 ch[80]; \n  int i; \n  printf(\"请输入一个字符串：\"); \n  gets(【2】); \n  for(i=0;ch[i]!= '【3】';i++) \n  { \n    if(ch[i]>='a'【4】ch[i]<='z') \n       ch[i]=ch[i]-32; \n  } \n  printf(\"转换后的字符串为：\\n\"); \n  【5】(ch); \n}",
+      "blank_count": "5",
+      "blank_score": "2",
+      "choice_options": "A、char\nB、||\nC、\\0\nD、ch[0]\nE、0\nF、ch\nG、&&\nH、puts\nI、putchar\nJ、Char"
+    }
+  ],
+  "groups": [
+    {
+      "name": "一、C语言程序设计单选题",
+      "count": "2"
+    },
+    {
+      "name": "二、C语言程序设计填空题",
+      "count": "1"
+    }
+  ],
+  "tips": "1.考试时长：60分钟。\n2.考试模块：C语言程序设计\n3.试题总分：100分\n4.考试形式：登录考试系统答题，考试结果以考试系统提交为准。\n5.注意事项:\n(1)随时保存操作过程的文件及配置，因未及时保存造成的数据丢失，责任由考生自负。\n(2)考生不得自行关闭或重启系统，不得自行断电、关机，不得删除或移动系统文件。\n"
+}
