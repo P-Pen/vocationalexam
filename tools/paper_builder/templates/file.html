@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/question.css">
+    <script defer src="static/js/jquery.min.js"></script>
+    <script defer src="static/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="h4 mb-3">第 {question_number} 题：{title}</h1>
+    <p class="lead">{prompt}</p>
+    <div class="card">
+        <div class="card-header">操作要求</div>
+        <div class="card-body">
+            <pre class="mb-0">{instructions}</pre>
+        </div>
+    </div>
+    <div class="card mt-3">
+        <div class="card-header">需提交文件</div>
+        <div class="card-body">
+            <ul id="deliverables" class="list-group list-group-flush"></ul>
+        </div>
+    </div>
+</div>
+<script>
+const deliverables = {deliverables_json};
+const list = document.getElementById('deliverables');
+deliverables.forEach(name => {{
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.textContent = name;
+    list.appendChild(li);
+}});
+</script>
+</body>
+</html>
