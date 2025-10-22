@@ -167,28 +167,6 @@ def load_template(name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def safe_format(template: str, **context: str) -> str:
-    """Safely format templates that contain literal braces."""
-
-    placeholders: List[tuple[str, str]] = []
-    for idx, (key, value) in enumerate(context.items()):
-        token = f"__PLACEHOLDER_{idx}_{key.upper()}__"
-        template = template.replace(f"{{{key}}}", token)
-        placeholders.append((token, str(value)))
-
-    template = template.replace("{", "{{").replace("}", "}}")
-
-    for token, value in placeholders:
-        template = template.replace(token, value)
-
-    return template
-
-
-def render_template(name: str, **context: str) -> str:
-    template = load_template(name)
-    return safe_format(template, **context)
-
-
 def escape_text(text: str) -> str:
     return html.escape(text, quote=False).replace("\n", "<br>")
 
