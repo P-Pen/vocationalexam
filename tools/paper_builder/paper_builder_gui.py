@@ -88,8 +88,8 @@ class SingleChoiceQuestion(Question):
         return f"[单选] {self.title} ({self.group})"
 
     def export(self, output_dir: Path, index: int) -> None:
-        template = load_template("single.html")
-        content = template.format(
+        content = render_template(
+            "single.html",
             question_number=f"{index:02d}",
             title=self.title,
             prompt_html=format_paragraphs(self.prompt),
@@ -111,8 +111,8 @@ class FillInQuestion(Question):
         return f"[填空{self.blanks}空] {self.title} ({self.group})"
 
     def export(self, output_dir: Path, index: int) -> None:
-        template = load_template("fill.html")
-        content = template.format(
+        content = render_template(
+            "fill.html",
             question_number=f"{index:02d}",
             title=self.title,
             prompt_html=format_paragraphs(self.prompt),
@@ -139,8 +139,8 @@ class FileTaskQuestion(Question):
         return f"[文件] {self.title} ({self.group})"
 
     def export(self, output_dir: Path, index: int) -> None:
-        template = load_template("file.html")
-        content = template.format(
+        content = render_template(
+            "file.html",
             question_number=f"{index:02d}",
             title=self.title,
             prompt_html=format_paragraphs(self.prompt),
