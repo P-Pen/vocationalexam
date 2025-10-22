@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>操作题</title>
+    <link rel="stylesheet" href="./static/bootstrap.min.css">
+    <link rel="stylesheet" href="./static/toastify.css">
+    <link rel="stylesheet" href="./static/viewer.min.css">
+    <style>
+		/* 禁止文本选择 */
+		.disable-selected {
+			-webkit-user-select: none; /* Safari */
+			-moz-user-select: none; /* Firefox */
+			-ms-user-select: none; /* IE/Edge */
+			user-select: none; /* 标准语法 */
+		}
+		/* 全屏水印相关样式 */
+		@layer utilities {
+            .watermark-container {
+                /* @apply fixed inset-0 pointer-events-none z-50 overflow-hidden; */
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				pointer-events: none;
+				z-index: 9999;
+				overflow: hidden;
+            }
+        }
+    </style>
+  </head>
+  <body>
+	<div class="container-fluid" style="margin: 10px;">
+		<!-- 题干区域 -->
+		<div class="row disable-selected">
+			<div class="col-md-12">
+			点击“答题”按钮，进入 prog.c 作答，根据程序功能描述，编写程序。<span style="font-weight: bold;">严禁更改 prog.c 中已有代码和注释，仅限在编程区域内编写程序，编程区域外作答无效，可根据需要自行增加或删除编程区域内的行数。</span>
+			</div>
+		</div>
+		<div class="row disable-selected">
+			<div class="col-md-12">
+			作答完毕，保存 prog.c 文件并关闭 Dev-C++软件，点击“提交本题”按钮。
+			</div>
+		</div>
+		<div class="row disable-selected">
+			<div class="col-md-12">
+			<span style="font-weight: bold;">程序功能：</span>输入两个正整数，计算并输出这两个数的最小公倍数。最小公倍数是指两个或多个整数共有的倍数中除 0 以外最小的一个。
+			</div>
+		</div>
+		<div class="row disable-selected">
+			<div class="col-md-12">
+				程序运行结果示例如下图所示。注意：输入输出格式必须与示例一致。
+			</div>
+		</div>
+		<!-- 图片区域 -->
+		<div class="row disable-selected" style="margin-top: 10px;">
+			<div class="col-md-6">
+				<img class="img-responsive center-block" src="./static/img1.png" alt="图片">
+			</div>
+		</div>
+	</div>
+	<!-- 水印容器 -->
+    <div id="watermarkContainer" class="watermark-container"></div>
+    <script src="./static/jquery.min.js"></script>
+    <script src="./static/clipboard.min.js"></script>
+    <script src="./static/bootstrap.min.js"></script>
+    <script src="./static/toastify.js"></script>
+    <script src="./static/viewer.min.js"></script>
+    <script src="./static/jquery-viewer.min.js"></script>
+    <script>
+		var ShowWatermark = false; // 是否显示水印
+		// 水印配置
+        var watermarkConfig = null;
+		// 创建水印
+        function createWatermark() {
+            // 清空现有水印
+            watermarkContainer.innerHTML = '';
+            
+            // 获取视口尺寸
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // 计算水印数量
+            const cols = Math.ceil(viewportWidth / watermarkConfig.spacing) + 1;
+            const rows = Math.ceil(viewportHeight / watermarkConfig.spacing) + 1;
+            
+            // 创建水印元素
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const watermark = document.createElement('div');
+                    
+                    // 设置水印样式
+                    watermark.style.position = 'absolute';
+                    watermark.style.left = `${j * watermarkConfig.spacing}px`;
+                    watermark.style.top = `${i * watermarkConfig.spacing}px`;
+                    watermark.style.transform = `rotate(${watermarkConfig.rotation}deg)`;
+                    watermark.style.opacity = watermarkConfig.opacity;
+                    watermark.style.fontSize = `${watermarkConfig.fontSize}px`;
+                    watermark.style.color = watermarkConfig.color;
+                    watermark.style.fontFamily = 'Arial, sans-serif';
+                    watermark.style.whiteSpace = 'nowrap';
+                    watermark.style.userSelect = 'none';
+                    watermark.style.webkitUserSelect = 'none';
+                    watermark.style.zIndex = '100';
+                    
+                    // 设置水印文本
+                    watermark.textContent = watermarkConfig.text;
+                    
+                    // 添加到容器
+                    watermarkContainer.appendChild(watermark);
+                }
+            }
+        }
+        // 网页加载就绪
+		$(document).ready(function() {
+			// AppBridge（不要动）
+			CefSharp.BindObjectAsync("AppBridge");
+			// 实现复制代码功能
+			var clipboard = new ClipboardJS('.btncopy');
+			clipboard.on('success', function(e) {
+				e.clearSelection();
+				Toastify({
+					text: "复制成功"
+				}).showToast();
+			});
+			// 接收来自宿主程序的水印
+			window.watermark = function(text) {
+				if(ShowWatermark) {
+					watermarkConfig = {
+						text: text,
+						rotation: -30,       // 旋转角度
+						opacity: 0.05,        // 透明度
+						fontSize: 20,        // 字体大小(px)
+						spacing: 200,        // 水印间距(px)
+						color: '#000000'     // 水印颜色
+					};
+					createWatermark(); // 初始化水印
+				}
+			}
+			// 禁止右键菜单
+			document.addEventListener('contextmenu', function(e) {
+				e.preventDefault();
+				return false;
+			});
+			// 图片放大
+			var $image = $('#preview');
+			$image.viewer({
+				inline: true,
+				viewed: function() {
+					$image.viewer('zoomTo', 1);
+				}
+			});
+			// Get the Viewer.js instance after initialized
+			var viewer = $image.data('viewer');
+			// View a list of images
+			$('.zoom').viewer();
+		});
+    </script>
+  </body>
+</html>
