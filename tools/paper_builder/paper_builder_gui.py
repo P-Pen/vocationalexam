@@ -175,9 +175,11 @@ def format_paragraphs(text: str) -> str:
     text = text.strip()
     if not text:
         return ""
+    if "<" in text and ">" in text:
+        return text
     paragraphs = []
     for block in text.split("\n\n"):
-        lines = [html.escape(line, quote=False) for line in block.split("\n")]
+        lines = block.split("\n")
         paragraphs.append(f"<p>{'<br>'.join(lines)}</p>")
     return "\n".join(paragraphs)
 
@@ -396,7 +398,6 @@ class PaperBuilderApp:
         group_var = tk.StringVar(value=self.default_group())
         prompt_text = tk.Text(frame, width=40, height=5)
         instruction_text = tk.Text(frame, width=40, height=6)
-        deliverable_box = tk.Listbox(frame, height=4)
         deliverable_var = tk.StringVar()
 
         _build_basic_fields(frame, title_var, score_var, group_var, prompt_text)
@@ -410,6 +411,10 @@ class PaperBuilderApp:
         entry = ttk.Entry(deliverable_frame, textvariable=deliverable_var)
         entry.grid(row=0, column=0, sticky="ew")
         deliverable_frame.columnconfigure(0, weight=1)
+        deliverable_frame.rowconfigure(1, weight=1)
+
+        deliverable_box = tk.Listbox(deliverable_frame, height=4)
+        deliverable_box.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=(5, 0))
 
         def add_deliverable() -> None:
             value = deliverable_var.get().strip()
@@ -420,7 +425,6 @@ class PaperBuilderApp:
         ttk.Button(deliverable_frame, text="添加", command=add_deliverable).grid(
             row=0, column=1, padx=5
         )
-        deliverable_box.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=(5, 0))
 
         def submit() -> None:
             deliverables = [deliverable_box.get(i) for i in range(deliverable_box.size())]
