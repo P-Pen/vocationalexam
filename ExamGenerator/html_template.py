@@ -244,7 +244,7 @@ class HTMLTemplate:
         # 代码区域（主代码）
         code_escaped = html.escape(code).replace('\n', '\n') if code.strip() else ''
         
-        # 备选项区域
+        # 备选项区域（不转义HTML，以支持格式化）
         choice_escaped = html.escape(choice_options).replace('\n', '\n') if choice_options.strip() else ''
         
         body = f"""	<div class="container-fluid" style="margin: 10px;">
@@ -270,14 +270,11 @@ class HTMLTemplate:
 			备选项如下：
 			</div>
 		</div>
-		<div class="row" style="margin-top: 10px;">
-			<div class="col-md-4">
-<pre id="code-2">
+		<div class="row disable-selected" style="margin-top: 10px;">
+			<div class="col-md-12">
+<pre>
 {choice_escaped}</pre>
 			</div>
-		</div>
-		<div class="row" style="padding-left: 10px;">
-			<button type="button" class="btn btn-primary btn-sm btncopy" data-clipboard-target="#code-2">复制代码</button>
 		</div>
 	</div>
 """
@@ -292,6 +289,11 @@ class HTMLTemplate:
 		<!-- 题干区域 -->
 		<div class="row disable-selected">
 			<div class="col-md-12">
+			<span style="font-weight: bold;">操作说明：</span>
+			</div>
+		</div>
+		<div class="row disable-selected">
+			<div class="col-md-12">
 			点击"答题"按钮，进入 prog.c 作答，根据程序功能描述，编写程序。<span style="font-weight: bold;">严禁更改 prog.c 中已有代码和注释，仅限在编程区域内编写程序，编程区域外作答无效，可根据需要自行增加或删除编程区域内的行数。</span>
 			</div>
 		</div>
@@ -300,7 +302,7 @@ class HTMLTemplate:
 			作答完毕，保存 prog.c 文件并关闭 Dev-C++软件，点击"提交本题"按钮。
 			</div>
 		</div>
-		<div class="row disable-selected">
+		<div class="row disable-selected" style="margin-top: 10px;">
 			<div class="col-md-12">
 			<span style="font-weight: bold;">程序功能：</span>{question_text}
 			</div>
@@ -329,7 +331,12 @@ class HTMLTemplate:
 		<!-- 题干区域 -->
 		<div class="row disable-selected">
 			<div class="col-md-12">
-			{question_text}
+			<span style="font-weight: bold;">题目要求：</span>{question_text}
+			</div>
+		</div>
+		<div class="row disable-selected" style="margin-top: 10px;">
+			<div class="col-md-12">
+			<span style="font-weight: bold;">操作说明：</span>
 			</div>
 		</div>
 		<div class="row disable-selected">
@@ -362,9 +369,9 @@ class HTMLTemplate:
 			6．作答完毕，关闭 Photoshop 软件，点击"提交本题"按钮。
 			</div>
 		</div>
-		<div class="row disable-selected">
+		<div class="row disable-selected" style="margin-top: 10px;">
 			<div class="col-md-12">
-			样图：
+			<span style="font-weight: bold;">样图：</span>
 			</div>
 		</div>
 		<!-- 图片区域 -->
