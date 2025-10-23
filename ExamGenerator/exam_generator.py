@@ -609,16 +609,11 @@ class ExamGeneratorGUI:
                     question_folder = output_dir / f"{i:02d}"
                     question_folder.mkdir(exist_ok=True)
                     
-                    # 复制要打开的文件到题目文件夹（如果指定了）
+                    # 复制要打开的文件到题目文件夹
                     open_file_name = ""
                     if open_file_path and Path(open_file_path).exists():
                         open_file_name = Path(open_file_path).name
                         shutil.copy2(open_file_path, question_folder / open_file_name)
-                    
-                    # 如果有prog.c模板，复制它（兼容旧逻辑）
-                    if is_c_operation and not open_file_path:
-                        shutil.copy2(prog_template, question_folder / "prog.c")
-                        open_file_name = "prog.c"
                     
                     # 如果是PS操作题
                     if is_ps_operation:
