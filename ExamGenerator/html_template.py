@@ -282,8 +282,17 @@ class HTMLTemplate:
         return (self.base_head.format(title="选择填空题") + body + 
                 self.base_foot.format(extra_script='', extra_ready=''))
     
-    def generate_c_operation(self, question_text):
-        """生成C语言操作题HTML"""
+    def generate_c_operation(self, question_text, question_number=1, example_ext='.png'):
+        """生成C语言操作题HTML
+        
+        Args:
+            question_text: 题目要求文本（程序功能描述）
+            question_number: 题目编号，用于定位对应的示例图文件
+            example_ext: 示例图文件扩展名（默认.png）
+        """
+        
+        # 示例图文件名：c_example1.png, c_example2.png, ...
+        example_filename = f"c_example{question_number}{example_ext}"
         
         body = f"""	<div class="container-fluid" style="margin: 10px;">
 		<!-- 题干区域 -->
@@ -315,7 +324,7 @@ class HTMLTemplate:
 		<!-- 图片区域 -->
 		<div class="row disable-selected" style="margin-top: 10px;">
 			<div class="col-md-6">
-				<img class="img-responsive center-block" src="./static/img1.png" alt="图片">
+				<img class="img-responsive center-block" src="./static/{example_filename}" alt="程序运行结果示例">
 			</div>
 		</div>
 	</div>
@@ -387,6 +396,38 @@ class HTMLTemplate:
 		<div class="row disable-selected" style="margin-top: 10px;">
 			<div class="col-md-6">
 				<img class="img-responsive center-block" src="./static/{sample_filename}" alt="样图">
+			</div>
+		</div>
+	</div>
+"""
+        
+        return (self.base_head.format(title="操作题") + body + 
+                self.base_foot.format(extra_script='', extra_ready=''))
+    
+    def generate_custom_operation(self, question_text, custom_operation=''):
+        """生成自定义操作题HTML
+        
+        Args:
+            question_text: 题目要求文本
+            custom_operation: 自定义操作说明（支持HTML）
+        """
+        
+        body = f"""	<div class="container-fluid" style="margin: 10px;">
+		<!-- 题干区域 -->
+		<div class="row disable-selected">
+			<div class="col-md-12">
+			<span style="font-weight: bold;">题目要求：</span>{question_text}
+			</div>
+		</div>
+		<div class="row disable-selected" style="margin-top: 10px;">
+			<div class="col-md-12">
+			<span style="font-weight: bold;">操作说明：</span>
+			</div>
+		</div>
+		<!-- 自定义操作说明 -->
+		<div class="row disable-selected">
+			<div class="col-md-12">
+			{custom_operation if custom_operation else '（请在题目编辑中填写自定义操作说明）'}
 			</div>
 		</div>
 	</div>

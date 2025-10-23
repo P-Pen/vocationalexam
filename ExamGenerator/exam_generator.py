@@ -236,39 +236,60 @@ class ExamGeneratorGUI:
             
         elif question_type == "file":
             # 通用文件操作题（可用于C语言或PS类操作题）
-            ttk.Label(self.options_frame, text="要打开的文件:").grid(
+            ttk.Label(self.options_frame, text="操作说明模板:").grid(
                 row=0, column=0, sticky=tk.W, pady=2, padx=5)
+            self.operation_template = tk.StringVar(value="c")
+            template_frame = ttk.Frame(self.options_frame)
+            template_frame.grid(row=0, column=1, sticky=tk.W, pady=2, padx=5)
+            ttk.Radiobutton(template_frame, text="C语言模板", variable=self.operation_template,
+                           value="c").pack(side=tk.LEFT, padx=5)
+            ttk.Radiobutton(template_frame, text="PS模板", variable=self.operation_template,
+                           value="ps").pack(side=tk.LEFT, padx=5)
+            ttk.Radiobutton(template_frame, text="自定义", variable=self.operation_template,
+                           value="custom").pack(side=tk.LEFT, padx=5)
+            
+            ttk.Label(self.options_frame, text="要打开的文件:").grid(
+                row=1, column=0, sticky=tk.W, pady=2, padx=5)
             self.open_file = tk.StringVar()
             entry_frame0 = ttk.Frame(self.options_frame)
-            entry_frame0.grid(row=0, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
+            entry_frame0.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
             ttk.Entry(entry_frame0, textvariable=self.open_file).pack(side=tk.LEFT, fill=tk.X, expand=True)
             ttk.Button(entry_frame0, text="浏览", command=self.browse_open_file).pack(side=tk.LEFT, padx=5)
             ttk.Label(entry_frame0, text="（如：prog.c、作品.psd、文档.docx）", 
                      foreground="gray").pack(side=tk.LEFT, padx=5)
             
+            ttk.Label(self.options_frame, text="自定义操作说明:").grid(
+                row=2, column=0, sticky=tk.NW, pady=2, padx=5)
+            self.custom_operation = scrolledtext.ScrolledText(self.options_frame, width=50, height=6)
+            self.custom_operation.grid(row=2, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
+            ttk.Label(self.options_frame, text="（选择\"自定义\"时使用，支持HTML）", 
+                     foreground="gray").grid(row=3, column=1, sticky=tk.W, padx=5)
+            
             ttk.Label(self.options_frame, text="素材文件夹 (可选):").grid(
-                row=1, column=0, sticky=tk.W, pady=2, padx=5)
+                row=4, column=0, sticky=tk.W, pady=2, padx=5)
             self.material_folder = tk.StringVar()
             entry_frame = ttk.Frame(self.options_frame)
-            entry_frame.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
+            entry_frame.grid(row=4, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
             ttk.Entry(entry_frame, textvariable=self.material_folder).pack(side=tk.LEFT, fill=tk.X, expand=True)
             ttk.Button(entry_frame, text="浏览", command=self.browse_material).pack(side=tk.LEFT, padx=5)
 
-            # 可选：样图（PS）
-            ttk.Label(self.options_frame, text="样图文件 (可选):").grid(
-                row=2, column=0, sticky=tk.W, pady=2, padx=5)
+            # 可选：样图/示例图（PS样图或C语言运行结果示例图）
+            ttk.Label(self.options_frame, text="示例图片 (可选):").grid(
+                row=5, column=0, sticky=tk.W, pady=2, padx=5)
             self.sample_image = tk.StringVar()
             entry_frame2 = ttk.Frame(self.options_frame)
-            entry_frame2.grid(row=2, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
+            entry_frame2.grid(row=5, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
             ttk.Entry(entry_frame2, textvariable=self.sample_image).pack(side=tk.LEFT, fill=tk.X, expand=True)
             ttk.Button(entry_frame2, text="浏览", command=self.browse_sample).pack(side=tk.LEFT, padx=5)
+            ttk.Label(entry_frame2, text="（PS样图或C运行结果）", 
+                     foreground="gray").pack(side=tk.LEFT, padx=5)
 
             # 可选：prog.c 模板（C语言）
             ttk.Label(self.options_frame, text="prog.c 模板 (可选):").grid(
-                row=3, column=0, sticky=tk.W, pady=2, padx=5)
+                row=6, column=0, sticky=tk.W, pady=2, padx=5)
             self.prog_template = tk.StringVar()
             entry_frame3 = ttk.Frame(self.options_frame)
-            entry_frame3.grid(row=3, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
+            entry_frame3.grid(row=6, column=1, sticky=(tk.W, tk.E), pady=2, padx=5)
             ttk.Entry(entry_frame3, textvariable=self.prog_template).pack(side=tk.LEFT, fill=tk.X, expand=True)
             ttk.Button(entry_frame3, text="浏览", command=self.browse_prog_template).pack(side=tk.LEFT, padx=5)
     
@@ -306,6 +327,8 @@ class ExamGeneratorGUI:
             question['choice_options'] = self.choice_options.get("1.0", tk.END).strip()
             
         elif question_type == "file":
+            question['operation_template'] = getattr(self, 'operation_template', tk.StringVar()).get()
+            question['custom_operation'] = getattr(self, 'custom_operation', scrolledtext.ScrolledText(self.options_frame)).get("1.0", tk.END).strip()
             question['open_file'] = getattr(self, 'open_file', tk.StringVar()).get().strip()
             question['material_folder'] = self.material_folder.get()
             question['sample_image'] = getattr(self, 'sample_image', tk.StringVar()).get()
@@ -347,6 +370,8 @@ class ExamGeneratorGUI:
             question['blank_score'] = self.blank_score.get()
             question['choice_options'] = self.choice_options.get("1.0", tk.END).strip()
         elif question_type == "file":
+            question['operation_template'] = getattr(self, 'operation_template', tk.StringVar()).get()
+            question['custom_operation'] = getattr(self, 'custom_operation', scrolledtext.ScrolledText(self.options_frame)).get("1.0", tk.END).strip()
             question['open_file'] = getattr(self, 'open_file', tk.StringVar()).get().strip()
             question['material_folder'] = self.material_folder.get()
             question['sample_image'] = getattr(self, 'sample_image', tk.StringVar()).get()
@@ -432,6 +457,10 @@ class ExamGeneratorGUI:
             self.choice_options.delete("1.0", tk.END)
             self.choice_options.insert("1.0", q.get('choice_options', ''))
         elif q['type'] == 'file':
+            self.operation_template.set(q.get('operation_template', 'c'))
+            self.custom_operation.delete("1.0", tk.END)
+            if q.get('custom_operation'):
+                self.custom_operation.insert("1.0", q['custom_operation'])
             self.open_file.set(q.get('open_file', ''))
             self.material_folder.set(q.get('material_folder', ''))
             self.sample_image.set(q.get('sample_image', ''))
@@ -594,22 +623,46 @@ class ExamGeneratorGUI:
                     prog_template = q.get('prog_template', '')
                     sample_image = q.get('sample_image', '')
                     open_file_path = q.get('open_file', '').strip()  # 要自动打开的文件路径
+                    operation_template = q.get('operation_template', 'c')  # 操作说明模板类型
+                    custom_operation = q.get('custom_operation', '')  # 自定义操作说明
                     
-                    # 判断操作题类型
+                    # 判断操作题类型（用于文件处理）
                     is_ps_operation = sample_image and Path(sample_image).exists()
                     is_c_operation = prog_template and Path(prog_template).exists()
                     
-                    # 生成HTML
-                    if is_ps_operation:
-                        # 获取样图扩展名
-                        sample_ext = Path(sample_image).suffix
+                    # 根据操作说明模板类型生成HTML
+                    if operation_template == 'ps':
+                        # 使用PS模板
+                        sample_ext = Path(sample_image).suffix if sample_image and Path(sample_image).exists() else '.jpg'
                         html_content = template.generate_ps_operation(
                             question_text=question_text_with_img,
                             question_number=i,
                             sample_ext=sample_ext
                         )
-                    else:
-                        html_content = template.generate_c_operation(question_text=question_text_with_img)
+                        # 复制PS样图到static文件夹
+                        if sample_image and Path(sample_image).exists() and static_dst.exists():
+                            sample_ext = Path(sample_image).suffix
+                            sample_filename = f"example{i}{sample_ext}"
+                            shutil.copy2(sample_image, static_dst / sample_filename)
+                    elif operation_template == 'c':
+                        # 使用C语言模板
+                        example_ext = Path(sample_image).suffix if sample_image and Path(sample_image).exists() else '.png'
+                        html_content = template.generate_c_operation(
+                            question_text=question_text_with_img,
+                            question_number=i,
+                            example_ext=example_ext
+                        )
+                        # 复制C语言示例图到static文件夹
+                        if sample_image and Path(sample_image).exists() and static_dst.exists():
+                            example_ext = Path(sample_image).suffix
+                            example_filename = f"c_example{i}{example_ext}"
+                            shutil.copy2(sample_image, static_dst / example_filename)
+                    else:  # operation_template == 'custom'
+                        # 使用自定义操作说明
+                        html_content = template.generate_custom_operation(
+                            question_text=question_text_with_img,
+                            custom_operation=custom_operation
+                        )
                     
                     # 创建题目文件夹
                     question_folder = output_dir / f"{i:02d}"
@@ -621,17 +674,11 @@ class ExamGeneratorGUI:
                         open_file_name = Path(open_file_path).name
                         shutil.copy2(open_file_path, question_folder / open_file_name)
                     
-                    # 如果是PS操作题
-                    if is_ps_operation:
-                        # 创建素材子文件夹
+                    # 处理素材文件
+                    if operation_template == 'ps':
+                        # PS操作题：创建素材子文件夹
                         material_subfolder = question_folder / "素材"
                         material_subfolder.mkdir(exist_ok=True)
-                        
-                        # 复制样图到static文件夹，使用题目编号命名
-                        if static_dst.exists():
-                            sample_ext = Path(sample_image).suffix
-                            sample_filename = f"example{i}{sample_ext}"
-                            shutil.copy2(sample_image, static_dst / sample_filename)
                         
                         # 复制素材文件到素材子文件夹
                         if material_folder and Path(material_folder).exists():
