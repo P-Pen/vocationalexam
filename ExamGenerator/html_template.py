@@ -324,8 +324,17 @@ class HTMLTemplate:
         return (self.base_head.format(title="操作题") + body + 
                 self.base_foot.format(extra_script='', extra_ready=''))
     
-    def generate_ps_operation(self, question_text):
-        """生成Photoshop操作题HTML"""
+    def generate_ps_operation(self, question_text, question_number=1, sample_ext='.jpg'):
+        """生成Photoshop操作题HTML
+        
+        Args:
+            question_text: 题目要求文本
+            question_number: 题目编号，用于定位对应的样图文件
+            sample_ext: 样图文件扩展名（默认.jpg）
+        """
+        
+        # 样图文件名：example1.jpg, example2.jpg, ...
+        sample_filename = f"example{question_number}{sample_ext}"
         
         body = f"""	<div class="container-fluid" style="margin: 10px;">
 		<!-- 题干区域 -->
@@ -377,7 +386,7 @@ class HTMLTemplate:
 		<!-- 图片区域 -->
 		<div class="row disable-selected" style="margin-top: 10px;">
 			<div class="col-md-6">
-				<img class="img-responsive center-block" src="./static/example.jpg" alt="样图">
+				<img class="img-responsive center-block" src="./static/{sample_filename}" alt="样图">
 			</div>
 		</div>
 	</div>

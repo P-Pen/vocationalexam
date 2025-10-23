@@ -601,7 +601,13 @@ class ExamGeneratorGUI:
                     
                     # 生成HTML
                     if is_ps_operation:
-                        html_content = template.generate_ps_operation(question_text=question_text_with_img)
+                        # 获取样图扩展名
+                        sample_ext = Path(sample_image).suffix
+                        html_content = template.generate_ps_operation(
+                            question_text=question_text_with_img,
+                            question_number=i,
+                            sample_ext=sample_ext
+                        )
                     else:
                         html_content = template.generate_c_operation(question_text=question_text_with_img)
                     
@@ -621,9 +627,11 @@ class ExamGeneratorGUI:
                         material_subfolder = question_folder / "素材"
                         material_subfolder.mkdir(exist_ok=True)
                         
-                        # 复制样图到static文件夹
+                        # 复制样图到static文件夹，使用题目编号命名
                         if static_dst.exists():
-                            shutil.copy2(sample_image, static_dst / "example.jpg")
+                            sample_ext = Path(sample_image).suffix
+                            sample_filename = f"example{i}{sample_ext}"
+                            shutil.copy2(sample_image, static_dst / sample_filename)
                         
                         # 复制素材文件到素材子文件夹
                         if material_folder and Path(material_folder).exists():
