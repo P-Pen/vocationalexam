@@ -846,8 +846,40 @@ class ExamGeneratorGUI:
     
     def on_closing(self):
         """窗口关闭时的处理"""
-        if self.questions and messagebox.askyesno("确认", "是否在退出前保存项目？"):
-            self.save_project()
+        if self.questions:
+            # 使用三按钮对话框：是/否/取消
+            result = messagebox.askyesnocancel("确认", "是否在退出前保存项目？")
+            if result is None:  # 用户点击了"取消"
+                return  # 不退出程序
+            elif result:  # 用户点击了"是"
+                # 保存项目前记录当前项目文件
+                file = filedialog.asksaveasfilename(
+                    title="保存项目",
+                    defaultextension=".json",
+                    filetypes=[("JSON文件", "*.json")]
+                )
+                
+                if not file:  # 用户在保存对话框中点击了取消
+                    return  # 不退出程序
+                
+                try:
+                    project = {
+                        'questions': self.questions,
+                        'groups': self.groups,
+                        'tips': self.tips_text.get("1.0", tk.END)
+                    }
+                    
+                    with open(file, 'w', encoding='utf-8') as f:
+                        json.dump(project, f, ensure_ascii=False, indent=2)
+                    
+                    messagebox.showinfo("成功", "项目已保存！")
+                except Exception as e:
+                    if messagebox.askyesno("错误", f"保存失败：{str(e)}\n是否仍要退出程序？"):
+                        pass  # 继续退出
+                    else:
+                        return  # 不退出程序
+            # result为False时（用户点击了"否"），直接退出
+        
         self.root.destroy()
     
     def validate_question(self, question):
